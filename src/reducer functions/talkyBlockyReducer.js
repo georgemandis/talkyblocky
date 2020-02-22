@@ -30,9 +30,9 @@ export default function talkyBlockyReducer(talkyBlocky, action) {
         }
       }
       else if (action.direction === "up" ) {
-        if (talkyBlocky.gridPos[1] < 0) {
+        if (talkyBlocky.gridPos[1] > 0) {
           talkyBlocky.top -= 100;
-          talkyBlocky.gridPos[0] -= 1;
+          talkyBlocky.gridPos[1] -= 1;
         }
       }
       return talkyBlocky;
