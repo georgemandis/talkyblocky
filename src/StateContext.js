@@ -33,18 +33,22 @@ function StateContextProvider(props) {
     down: "down",
     left: "left",
     right: "right",
+    rights: "right",
     write: "right"
   }
 
-  const nonCommands = {
+  const nonCommands = {                        
     // "walkie-talkie": "That's me!",
-    "george": "Hi George! It's so nice to hear your voice. I hope you are doing well... I love you.",
+    "hi":   ["Hi! How's it going?", "Yo!", "Hey there."],
+    "high": ["Hi! How's it going?", "Yo!", "Hey there."],    
+    "george": "Hi George. It's so nice to hear your voice. I hope you are doing well... I love you.",
     "yo": "Oh. Hi. Um. Is George still there?", // Dree
     // jokes
     "hear": "I like jokes. My life is a joke.", // want to hear a joke?
     "binary": "Ha ha hahahaha haha hahahaha. Oh my god, that is so funny. hahahaha. I love you George.", // 10 types of people joke
     "puns": "I don't know. Why don't thieves get puns?", // why don't thieves get puns?
-    "literally": "Oh. Ha." // they take them them literally
+    "literally": "Oh. Ha.", // they take them them literally
+     "localhost": "Thanks for letting me present at localhost with you. I hope nothing goes wrong. That would be embarassing. For you."
   }
 
   const dictionary = [];
@@ -53,12 +57,20 @@ function StateContextProvider(props) {
   dictionary.push(...Object.keys(directions));
   dictionary.push(...Object.keys(nonCommands));
 
-  function talkyBlockySpeak(speech) {    
-    const utterThis = new SpeechSynthesisUtterance(speech);
-    utterThis.voice = talkyBlockyVoice;
-    utterThis.pitch = 1.5;
-    utterThis.rate = 0.75;    
-    synth.speak(utterThis);  
+  function talkyBlockySpeak(speech, probability=1) {
+    if (Math.random() < probability) {
+
+      // see if multiple responses are possible
+      if (typeof speech === 'object') {
+        speech = speech[Math.floor(Math.random() * speech.length)];
+      }
+
+      const utterThis = new SpeechSynthesisUtterance(speech);
+      utterThis.voice = talkyBlockyVoice;
+      utterThis.pitch = 1.5;
+      utterThis.rate = 0.75;    
+      synth.speak(utterThis);  
+    }    
   }
 
 
@@ -75,6 +87,10 @@ function StateContextProvider(props) {
       if (keywordsIndex !== keywords.length) {
         const newKeywords = keywords.slice(keywordsIndex, keywords.length);
 
+        if (newKeywords.length > 8) {
+          talkyBlockySpeak("You're lucky I'm a computer, because I would forget all of that otherwise.");
+        }
+
         newKeywords.forEach((keyword, index) => {
           console.log(keyword);
           setTimeout((keyword) => {
@@ -83,18 +99,28 @@ function StateContextProvider(props) {
                 type: "MOVE_TALKY_BLOCKY",
                 grid: grid,
                 direction: directions[keyword]
-              });            
+              });
+                            
+              if (newKeywords.length <= 8) {
+                talkyBlockySpeak(["Walk walk walk", ""], .25);
+              }
+
             } else if (colors.hasOwnProperty(keyword)) {
               dispatchGrid({
                 type: "CHANGE_GRID_BLOCK_COLOR",
                 position: [talkyBlocky.gridPos[0], talkyBlocky.gridPos[1]],
                 rgb: colors[keyword]
-              });              
+              });
+              
+              if (newKeywords.length <= 8) {
+                talkyBlockySpeak([`Poof. It's ${keyword}`, `Voila.`, `${keyword} it is.`], 1);
+              }
+
             } else if (nonCommands.hasOwnProperty(keyword)) {
               talkyBlockySpeak(nonCommands[keyword]);
             }
   
-            setBuildStage(Math.random());
+            setBuildStage(Date.now());
           }, index*350, keyword);
           
         });
