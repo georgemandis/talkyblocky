@@ -27,7 +27,7 @@ export default function Grid(props) {
 
   for (let heightIndex = 0 ; heightIndex < grid.height ; heightIndex++ , gridRowKey++) {
     const gridRowBlocks = [];
-    for (let widthIndex = 0 ; widthIndex < grid.width ; widthIndex++, blockKey++  ) {
+    for (let widthIndex = 0 ; widthIndex < grid.width ; widthIndex++, blockKey++  ) {      
       gridRowBlocks[widthIndex] = <GridBlock key={blockKey} size={grid.blockSize} color={grid.RGBs[widthIndex][heightIndex]} />;
     }
     gridRows[heightIndex] = (

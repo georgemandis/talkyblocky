@@ -3,6 +3,7 @@ import styled, {css} from 'styled-components';
 const TalkyBlocky = styled.div`
   position: absolute;
   background-color: black;
+  transition: left 350ms, top 350ms;
 
   ${props =>
     props.talkyBlocky && css`

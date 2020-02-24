@@ -6,7 +6,7 @@ import gridReducer from "./reducer functions/gridReducer";
 import talkyBlockyReducer from "./reducer functions/talkyBlockyReducer";
 
 // Import helper functions
-import useEventListener from "./helper functions/useEventListener";
+import { colors } from "./helper functions/colors";
 
 // CREATE CONTEXT ////////////////////////////////////////////////////////////////////////////////////
 const StateContext = createContext();
@@ -23,84 +23,79 @@ function StateContextProvider(props) {
 
   const [talkyBlocky, dispatchTalkyBlocky] = useReducer(talkyBlockyReducer, {});
 
+
   // SPEECH RECOGNITION API //////////////////////////////////////////////////////////////////////
   let recognition;
-  const dictionary = [
-    "up",
-    "down",
-    "left",
-    "right",
-    "write",
-    "walkie-talkie",
-    "red",
-    "blue",
-    "blew",
-    "green",
-    "yellow",
-    "violet",
-    "purple"
-  ];
+  let synth, talkyBlockyVoice;
+
+  const directions = {
+    up: "up",
+    down: "down",
+    left: "left",
+    right: "right",
+    write: "right"
+  }
+
+  const nonCommands = {
+    "walkie-talkie": "That's me!",
+    "george": "Hi George!",
+    "yo": "Hi Dree!"
+  }
+
+  const dictionary = [];
+
+  dictionary.push(...Object.keys(colors));
+  dictionary.push(...Object.keys(directions));
+  dictionary.push(...Object.keys(nonCommands));
+
+  function talkyBlockySpeak(speech) {    
+    const utterThis = new SpeechSynthesisUtterance(speech);
+    utterThis.voice = talkyBlockyVoice;
+    utterThis.pitch = 1.5;
+    utterThis.rate = 0.75;    
+    synth.speak(utterThis);  
+  }
+
 
   function speechHandler(e) {
-    if (e.results[0].isFinal) {
+    if (e.results[0].isFinal) {      
       const words = e.results[0][0].transcript.toLowerCase().split(" ");
+      console.log(words);
       const recognizedWords = words.filter(word => dictionary.includes(word));
 
       keywords.push(...recognizedWords);
-      setKeyWords(keywords);
-
-      console.log(keywords);
+      setKeyWords(keywords);      
 
       // see if there are new keywords to
       if (keywordsIndex !== keywords.length) {
         const newKeywords = keywords.slice(keywordsIndex, keywords.length);
-        
-        newKeywords.forEach(keyword => {
-          
-          switch (keyword) {
-            case "right" || "write":
-              dispatchTalkyBlocky({
-                type: "MOVE_TALKY_BLOCKY",
-                grid: grid,
-                direction: "right"
-              });              
-            break;
-            case "left":              
-              dispatchTalkyBlocky({
-                type: "MOVE_TALKY_BLOCKY",
-                grid: grid,
-                direction: "left"
-              });
-            break;
-            case "down":
-              dispatchTalkyBlocky({
-                type: "MOVE_TALKY_BLOCKY",
-                grid: grid,
-                direction: "down"
-              });
-            break;
-            case "up":
 
+        newKeywords.forEach((keyword, index) => {
+          console.log(keyword);
+          setTimeout((keyword) => {
+            if (directions.hasOwnProperty(keyword)) {
               dispatchTalkyBlocky({
                 type: "MOVE_TALKY_BLOCKY",
                 grid: grid,
-                direction: "up"
+                direction: directions[keyword]
+              });            
+            } else if (colors.hasOwnProperty(keyword)) {
+              dispatchGrid({
+                type: "CHANGE_GRID_BLOCK_COLOR",
+                position: [talkyBlocky.gridPos[0], talkyBlocky.gridPos[1]],
+                rgb: colors[keyword]
               });
-            break;
-            
-            default:
-              console.log("I don't know.")
-            break;
-          }
-
-          
-         setBuildStage(Math.random());
+            } else if (nonCommands.hasOwnProperty(keyword)) {
+              talkyBlockySpeak(nonCommands[keyword]);
+            }
+  
+            setBuildStage(Math.random());
+          }, index*350, keyword);
           
         });
 
         keywordsIndex = keywords.length;
         // setKeyWordsIndex(keywordsIndex);
-        console.log(keywordsIndex);
       }
     }
   }
@@ -115,7 +110,7 @@ function StateContextProvider(props) {
   function spaceBarDownHandler(e) {
     if (e.keyCode === 32) {
       recognition.start();
-      recognition.addEventListener("end", continuouslyTranscribe);
+      recognition.addEventListener("end", continuouslyTranscribe);      
     }
   }
 
@@ -130,15 +125,10 @@ function StateContextProvider(props) {
   // Initialize //////////////////////////////////////////////////////////////////////////////////
   useEffect(() => {
     if (buildStage === 0) {
-      dispatchGrid({ type: "BUILD_GRID" });
-      dispatchGrid({
-        type: "CHANGE_GRID_BLOCK_COLOR",
-        position: [10, 5],
-        rgb: "200,200,25"
-      });
+      dispatchGrid({ type: "BUILD_GRID" });      
       setBuildStage(1);
     } else if (buildStage === 1) {
-      dispatchTalkyBlocky({ type: "BUILD_TALKY_BLOCKY", grid: grid });      
+      dispatchTalkyBlocky({ type: "BUILD_TALKY_BLOCKY", grid: grid });
       setBuildStage(2);
     } else if (buildStage === 2) {
       document.addEventListener("keydown", spaceBarDownHandler, { once: true });
@@ -150,7 +140,20 @@ function StateContextProvider(props) {
       recognition.lang = "en-US";
       recognition.interimResults = true;
       recognition.maxAlternatives = 1;
-      recognition.addEventListener("result", speechHandler);
+      recognition.addEventListener("result", speechHandler);      
+            
+      // initializing the speech synthesis API
+      synth = window.speechSynthesis; 
+            
+      synth.onvoiceschanged = () => {
+        const voices = synth.getVoices();      
+        voices.forEach((voice) => {        
+            if (voice.name === 'Google US English') {
+              talkyBlockyVoice = voice;
+              // talkyBlockySpeak("Hi! I'm Walkie-Talkie");
+            }
+          })          
+      };
 
       // adding grammar so talky blocky understands certain words more clearly than others
       const grammar = `#JSGF V1.0; grammar talkyblockyDictionary;  public <word> = ${dictionary.join(
@@ -161,8 +164,13 @@ function StateContextProvider(props) {
       recognition.grammars = speechRecognitionList;
 
       setBuildStage(3);
+    } else if (buildStage === 3) {      
+      setBuildStage(4);
     }
   }, [buildStage]);
+
+
+  
 
   // PROVIDE CONTEXT //////////////////////////////////////////////////////////////////////////////
   return (
