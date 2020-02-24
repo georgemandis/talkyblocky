@@ -37,9 +37,14 @@ function StateContextProvider(props) {
   }
 
   const nonCommands = {
-    "walkie-talkie": "That's me!",
-    "george": "Hi George!",
-    "yo": "Hi Dree!"
+    // "walkie-talkie": "That's me!",
+    "george": "Hi George! It's so nice to hear your voice. I hope you are doing well... I love you.",
+    "yo": "Oh. Hi. Um. Is George still there?", // Dree
+    // jokes
+    "hear": "I like jokes. My life is a joke.", // want to hear a joke?
+    "binary": "Ha ha hahahaha haha hahahaha. Oh my god, that is so funny. hahahaha. I love you George.", // 10 types of people joke
+    "puns": "I don't know. Why don't thieves get puns?", // why don't thieves get puns?
+    "literally": "Oh. Ha." // they take them them literally
   }
 
   const dictionary = [];
@@ -64,7 +69,7 @@ function StateContextProvider(props) {
       const recognizedWords = words.filter(word => dictionary.includes(word));
 
       keywords.push(...recognizedWords);
-      setKeyWords(keywords);      
+      setKeyWords(keywords);  
 
       // see if there are new keywords to
       if (keywordsIndex !== keywords.length) {
@@ -84,7 +89,7 @@ function StateContextProvider(props) {
                 type: "CHANGE_GRID_BLOCK_COLOR",
                 position: [talkyBlocky.gridPos[0], talkyBlocky.gridPos[1]],
                 rgb: colors[keyword]
-              });
+              });              
             } else if (nonCommands.hasOwnProperty(keyword)) {
               talkyBlockySpeak(nonCommands[keyword]);
             }
@@ -109,8 +114,13 @@ function StateContextProvider(props) {
 
   function spaceBarDownHandler(e) {
     if (e.keyCode === 32) {
-      recognition.start();
-      recognition.addEventListener("end", continuouslyTranscribe);      
+      try {
+        recognition.start();
+        recognition.addEventListener("end", continuouslyTranscribe);      
+      }catch{
+        // recognition already started
+      }
+      
     }
   }
 
