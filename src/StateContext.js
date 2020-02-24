@@ -23,6 +23,7 @@ function StateContextProvider(props) {
 
   const [talkyBlocky, dispatchTalkyBlocky] = useReducer(talkyBlockyReducer, {});
   const [talkyIsTalking, setTalkyIsTalking] = useState(false);
+  const [talkyIsListening, setTalkyIsListening] = useState(false);  
 
 
   // SPEECH RECOGNITION API //////////////////////////////////////////////////////////////////////
@@ -144,9 +145,16 @@ function StateContextProvider(props) {
     }
   }
 
-  function talkyStopsTalking() {
-    console.log("stop talking")
+  function talkyStopsTalking() {    
     setTalkyIsTalking(false);
+  }
+
+  function talkyStartsListening() {    
+    setTalkyIsListening(true);
+  }
+
+  function talkyStopsListening() {
+    setTalkyIsListening(false);
   }
 
   // Some hacky shit to actually get the API to not stop when the speaker pauses.
@@ -195,6 +203,9 @@ function StateContextProvider(props) {
       recognition.interimResults = true;
       recognition.maxAlternatives = 1;
       recognition.addEventListener("result", speechHandler); 
+
+      recognition.addEventListener("audiostart", talkyStartsListening);
+      recognition.addEventListener("audioend", talkyStopsListening); 
             
       // initializing the speech synthesis API
       synth = window.speechSynthesis; 
@@ -228,7 +239,7 @@ function StateContextProvider(props) {
 
   // PROVIDE CONTEXT //////////////////////////////////////////////////////////////////////////////
   return (
-    <StateContext.Provider value={{ grid, talkyBlocky, talkyIsTalking}}>
+    <StateContext.Provider value={{ grid, talkyBlocky, talkyIsTalking, talkyIsListening}}>
       {props.children}
     </StateContext.Provider>
   );

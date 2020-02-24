@@ -7,11 +7,11 @@ import Grid from './Grid';
 import TalkyBlocky from './TalkyBlocky';
 
 export default function Display() {
-  const {talkyBlocky, grid, talkyIsTalking} = useContext(StateContext);  
+  const {talkyBlocky, grid, talkyIsTalking, talkyIsListening} = useContext(StateContext);  
   return(
     <div>
       <Grid grid={grid} />
-      <TalkyBlocky talkyBlocky={talkyBlocky} talkyIsTalking={talkyIsTalking}/>
+      <TalkyBlocky talkyBlocky={talkyBlocky} talkyIsTalking={talkyIsTalking} talkyIsListening={talkyIsListening}/>
     </div>
   )
 }

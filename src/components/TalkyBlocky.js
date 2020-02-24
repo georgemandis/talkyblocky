@@ -8,7 +8,7 @@ const talkingAnimation = keyframes`
 
 const TalkyBlocky = styled.div`
   position: absolute;
-  background: url(/assets/images/walkie-talkie/wtLight.png) no-repeat #000;
+  background-repeat:none;  
   transition: left 350ms, right 350ms;
   
   ${props =>    
@@ -19,7 +19,8 @@ const TalkyBlocky = styled.div`
     height: ${props.talkyBlocky.size}px;
     animation-name: ${props.talkyIsTalking ? talkingAnimation : ''};
     animation-duration: 300ms;
-    animation-iteration-count: infinite;
+    animation-iteration-count: infinite;    
+    background-image:${props.talkyIsListening ? "url(/assets/images/walkie-talkie/wtMed.png)" : "url(/assets/images/walkie-talkie/wtLight.png)"}
     `
 
   }
