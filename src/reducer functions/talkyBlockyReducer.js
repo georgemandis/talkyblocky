@@ -8,7 +8,7 @@ export default function talkyBlockyReducer(talkyBlocky, action) {
         left: initialOffset,
         top: initialOffset,
         gridPos: [0, 0]
-      }
+      }     
 
     case "MOVE_TALKY_BLOCKY":
       if (action.direction === "left") {

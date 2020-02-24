@@ -22,6 +22,7 @@ function StateContextProvider(props) {
   const [grid, dispatchGrid] = useReducer(gridReducer, {});
 
   const [talkyBlocky, dispatchTalkyBlocky] = useReducer(talkyBlockyReducer, {});
+  const [talkyIsTalking, setTalkyIsTalking] = useState(false);
 
 
   // SPEECH RECOGNITION API //////////////////////////////////////////////////////////////////////
@@ -48,7 +49,8 @@ function StateContextProvider(props) {
     "binary": "Ha ha hahahaha haha hahahaha. Oh my god, that is so funny. hahahaha. I love you George.", // 10 types of people joke
     "puns": "I don't know. Why don't thieves get puns?", // why don't thieves get puns?
     "literally": "Oh. Ha.", // they take them them literally
-     "localhost": "Thanks for letting me present at localhost with you. I hope nothing goes wrong. That would be embarassing. For you."
+     "localhost": "Thanks for letting me present at localhost with you. I hope nothing goes wrong. That would be embarassing. For you.",
+     "thanks" : ["your welcome, easy fix", "no sweat, easy fix", "piece of cake", "It's not like I have a choice"]
   }
 
   const dictionary = [];
@@ -69,7 +71,18 @@ function StateContextProvider(props) {
       utterThis.voice = talkyBlockyVoice;
       utterThis.pitch = 1.5;
       utterThis.rate = 0.75;    
-      synth.speak(utterThis);  
+      synth.speak(utterThis);
+      setTalkyIsTalking(true);
+      utterThis.addEventListener("end", talkyStopsTalking);     
+      
+      // talkyBlocky.isTalking = true;
+
+      // console.log(talkyBlocky);
+      // dispatchTalkyBlocky({
+      //   type: "TALK_TALKY_BLOCKY",    
+      //   grid: grid,    
+      //   speak: true
+      // });
     }    
   }
 
@@ -131,6 +144,11 @@ function StateContextProvider(props) {
     }
   }
 
+  function talkyStopsTalking() {
+    console.log("stop talking")
+    setTalkyIsTalking(false);
+  }
+
   // Some hacky shit to actually get the API to not stop when the speaker pauses.
   function continuouslyTranscribe() {
     recognition.start();
@@ -176,7 +194,7 @@ function StateContextProvider(props) {
       recognition.lang = "en-US";
       recognition.interimResults = true;
       recognition.maxAlternatives = 1;
-      recognition.addEventListener("result", speechHandler);      
+      recognition.addEventListener("result", speechHandler); 
             
       // initializing the speech synthesis API
       synth = window.speechSynthesis; 
@@ -210,7 +228,7 @@ function StateContextProvider(props) {
 
   // PROVIDE CONTEXT //////////////////////////////////////////////////////////////////////////////
   return (
-    <StateContext.Provider value={{ grid, talkyBlocky }}>
+    <StateContext.Provider value={{ grid, talkyBlocky, talkyIsTalking}}>
       {props.children}
     </StateContext.Provider>
   );
