@@ -117,8 +117,8 @@ function StateContextProvider(props) {
       
       try {                              
         const sound = new Audio();
-        sound.src = "/assets/sounds/beep0.wav";  
-        sound.volume = .5;
+        sound.src = "/assets/sounds/listenSound.wav";  
+        sound.volume = .05;
         sound.play();
     
         recognition.start();
@@ -133,6 +133,11 @@ function StateContextProvider(props) {
   function spaceBarUpHandler(e) {
 
     if (e.keyCode === 32) {      
+      const sound = new Audio();
+      sound.src = "/assets/sounds/executeSound.wav";  
+      sound.volume = .05;
+      sound.play();
+
       recognition.removeEventListener("end", continuouslyTranscribe);
       recognition.stop();
       document.addEventListener("keydown", spaceBarDownHandler, { once: true });
