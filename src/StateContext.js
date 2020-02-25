@@ -23,7 +23,7 @@ function StateContextProvider(props) {
 
   const [talkyBlocky, dispatchTalkyBlocky] = useReducer(talkyBlockyReducer, {});
   const [talkyIsTalking, setTalkyIsTalking] = useState(false);
-  const [talkyIsListening, setTalkyIsListening] = useState(false);  
+  const [talkyBackground, setTalkyBackground] = useState(false);  
 
 
   // SPEECH RECOGNITION API //////////////////////////////////////////////////////////////////////
@@ -95,53 +95,8 @@ function StateContextProvider(props) {
       const recognizedWords = words.filter(word => dictionary.includes(word));
 
       keywords.push(...recognizedWords);
-      setKeyWords(keywords);  
-
-      // see if there are new keywords to
-      if (keywordsIndex !== keywords.length) {
-        const newKeywords = keywords.slice(keywordsIndex, keywords.length);
-
-        if (newKeywords.length > 8) {
-          talkyBlockySpeak("You're lucky I'm a computer, because I would forget all of that otherwise.");
-        }
-
-        newKeywords.forEach((keyword, index) => {
-          console.log(keyword);
-          setTimeout((keyword) => {
-            if (directions.hasOwnProperty(keyword)) {
-              dispatchTalkyBlocky({
-                type: "MOVE_TALKY_BLOCKY",
-                grid: grid,
-                direction: directions[keyword]
-              });
-                            
-              if (newKeywords.length <= 8) {
-                talkyBlockySpeak(["Walk walk walk", ""], .25);
-              }
-
-            } else if (colors.hasOwnProperty(keyword)) {
-              dispatchGrid({
-                type: "CHANGE_GRID_BLOCK_COLOR",
-                position: [talkyBlocky.gridPos[0], talkyBlocky.gridPos[1]],
-                rgb: colors[keyword]
-              });
-              
-              if (newKeywords.length <= 8) {
-                talkyBlockySpeak([`Poof. It's ${keyword}`, `Voila.`, `${keyword} it is.`], 1);
-              }
-
-            } else if (nonCommands.hasOwnProperty(keyword)) {
-              talkyBlockySpeak(nonCommands[keyword]);
-            }
-  
-            setBuildStage(Date.now());
-          }, index*350, keyword);
-          
-        });
-
-        keywordsIndex = keywords.length;
-        // setKeyWordsIndex(keywordsIndex);
-      }
+      setKeyWords(keywords);      
+      processNewKeywords();
     }
   }
 
@@ -150,11 +105,11 @@ function StateContextProvider(props) {
   }
 
   function talkyStartsListening() {    
-    setTalkyIsListening(true);
+    setTalkyBackground("wtListening.png");
   }
 
   function talkyStopsListening() {
-    setTalkyIsListening(false);
+    setTalkyBackground(false);    
   }
 
   // Some hacky shit to actually get the API to not stop when the speaker pauses.
@@ -166,9 +121,9 @@ function StateContextProvider(props) {
 
   function spaceBarDownHandler(e) {
     if (e.keyCode === 32) {
-      try {
+      try {                              
         recognition.start();
-        recognition.addEventListener("end", continuouslyTranscribe);      
+        recognition.addEventListener("end", continuouslyTranscribe);              
       }catch{
         // recognition already started
       }
@@ -177,10 +132,65 @@ function StateContextProvider(props) {
   }
 
   function spaceBarUpHandler(e) {
-    if (e.keyCode === 32) {
+    if (e.keyCode === 32) {      
       recognition.removeEventListener("end", continuouslyTranscribe);
       recognition.stop();
       document.addEventListener("keydown", spaceBarDownHandler, { once: true });
+    }
+  }
+
+  function processNewKeywords() {
+    // see if there are new keywords to
+    if (keywordsIndex !== keywords.length) {
+      const newKeywords = keywords.slice(keywordsIndex, keywords.length);
+
+      if (newKeywords.length > 8) {
+        talkyBlockySpeak("You're lucky I'm a computer, because I would forget all of that otherwise.");
+      }
+
+      newKeywords.forEach((keyword, index) => {
+        console.log(keyword);
+        
+        setTimeout((keyword) => {
+          if (directions.hasOwnProperty(keyword)) {
+            dispatchTalkyBlocky({
+              type: "MOVE_TALKY_BLOCKY",
+              grid: grid,
+              direction: directions[keyword]
+            });
+            
+            setTalkyBackground(`wt${keyword}.png`);
+                          
+            if (newKeywords.length <= 8) {
+              talkyBlockySpeak(["Walk walk walk", ""], .25);
+            }
+
+          } else if (colors.hasOwnProperty(keyword)) {
+            dispatchGrid({
+              type: "CHANGE_GRID_BLOCK_COLOR",
+              position: [talkyBlocky.gridPos[0], talkyBlocky.gridPos[1]],
+              rgb: colors[keyword]
+            });
+            
+            if (newKeywords.length <= 8) {
+              talkyBlockySpeak([`Poof. It's ${keyword}`, `Voila.`, `${keyword} it is.`], .25);
+            }
+
+          } else if (nonCommands.hasOwnProperty(keyword)) {
+            talkyBlockySpeak(nonCommands[keyword]);
+          } 
+            
+          setBuildStage(Date.now());
+        }, index*350, keyword);
+
+        setTimeout(()=>{
+          setTalkyBackground(`wtDefault.png`);
+        }, (newKeywords.length+1) * 350);
+        
+      });
+
+      keywordsIndex = keywords.length;
+      // setKeyWordsIndex(keywordsIndex);
     }
   }
 
@@ -190,22 +200,23 @@ function StateContextProvider(props) {
       dispatchGrid({ type: "BUILD_GRID" });      
       setBuildStage(1);
     } else if (buildStage === 1) {
-      dispatchTalkyBlocky({ type: "BUILD_TALKY_BLOCKY", grid: grid });
+      dispatchTalkyBlocky({ type: "BUILD_TALKY_BLOCKY", grid: grid });      
       setBuildStage(2);
     } else if (buildStage === 2) {
       document.addEventListener("keydown", spaceBarDownHandler, { once: true });
       document.addEventListener("keyup", spaceBarUpHandler);
 
+      
       // initializing the speech recognition API
       recognition = new window.webkitSpeechRecognition();
       recognition.continuous = false;
       recognition.lang = "en-US";
       recognition.interimResults = true;
       recognition.maxAlternatives = 1;
-      recognition.addEventListener("result", speechHandler); 
-
+      
+      recognition.addEventListener("result", speechHandler);
       recognition.addEventListener("audiostart", talkyStartsListening);
-      recognition.addEventListener("audioend", talkyStopsListening); 
+      recognition.addEventListener("audioend", talkyStopsListening);
             
       // initializing the speech synthesis API
       synth = window.speechSynthesis; 
@@ -224,6 +235,7 @@ function StateContextProvider(props) {
       const grammar = `#JSGF V1.0; grammar talkyblockyDictionary;  public <word> = ${dictionary.join(
         " | "
       )};`;
+
       const speechRecognitionList = new window.webkitSpeechGrammarList();
       speechRecognitionList.addFromString(grammar, 1);
       recognition.grammars = speechRecognitionList;
@@ -235,11 +247,9 @@ function StateContextProvider(props) {
   }, [buildStage]);
 
 
-  
-
   // PROVIDE CONTEXT //////////////////////////////////////////////////////////////////////////////
   return (
-    <StateContext.Provider value={{ grid, talkyBlocky, talkyIsTalking, talkyIsListening}}>
+    <StateContext.Provider value={{ grid, talkyBlocky, talkyIsTalking, talkyBackground}}>
       {props.children}
     </StateContext.Provider>
   );
