@@ -51,7 +51,8 @@ function StateContextProvider(props) {
     "puns": "I don't know. Why don't thieves get puns?", // why don't thieves get puns?
     "literally": "Oh. Ha.", // they take them them literally
      "localhost": "Thanks for letting me present at localhost with you. I hope nothing goes wrong. That would be embarassing. For you.",
-     "thanks" : ["your welcome, easy fix", "no sweat, easy fix", "piece of cake", "It's not like I have a choice"]
+     "thanks" : ["your welcome, easy fix", "no sweat, easy fix", "piece of cake", "It's not like I have a choice"],
+     "open": "I'm afraid I can't do that, George"
   }
 
   const dictionary = [];
@@ -75,15 +76,7 @@ function StateContextProvider(props) {
       synth.speak(utterThis);
       setTalkyIsTalking(true);
       utterThis.addEventListener("end", talkyStopsTalking);     
-      
-      // talkyBlocky.isTalking = true;
-
-      // console.log(talkyBlocky);
-      // dispatchTalkyBlocky({
-      //   type: "TALK_TALKY_BLOCKY",    
-      //   grid: grid,    
-      //   speak: true
-      // });
+          
     }    
   }
 
