@@ -59,7 +59,7 @@ function StateContextProvider(props) {
 
   dictionary.push(...Object.keys(colors));
   dictionary.push(...Object.keys(directions));
-  dictionary.push(...Object.keys(nonCommands));
+  dictionary.push(...Object.keys(nonCommands));  
 
   function talkyBlockySpeak(speech, probability=1) {
     if (Math.random() < probability) {
@@ -114,7 +114,13 @@ function StateContextProvider(props) {
 
   function spaceBarDownHandler(e) {
     if (e.keyCode === 32) {
+      
       try {                              
+        const sound = new Audio();
+        sound.src = "/assets/sounds/beep0.wav";  
+        sound.volume = .5;
+        sound.play();
+    
         recognition.start();
         recognition.addEventListener("end", continuouslyTranscribe);              
       }catch{
@@ -125,6 +131,7 @@ function StateContextProvider(props) {
   }
 
   function spaceBarUpHandler(e) {
+
     if (e.keyCode === 32) {      
       recognition.removeEventListener("end", continuouslyTranscribe);
       recognition.stop();
