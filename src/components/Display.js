@@ -1,17 +1,23 @@
-import React, {useEffect, useContext} from 'react';
+import React, { useEffect, useContext } from "react";
 
-import StateContext from '../StateContext';
+import StateContext from "../StateContext";
 
 // Import Components
-import Grid from './Grid';
-import TalkyBlocky from './TalkyBlocky';
+import Grid from "./Grid";
+import TalkyBlocky from "./TalkyBlocky";
 
 export default function Display() {
-  const {talkyBlocky, grid, talkyIsTalking, talkyBackground} = useContext(StateContext);  
-  return(
+  const { talkyBlocky, grid, talkyIsTalking, talkyBackground } = useContext(
+    StateContext
+  );
+  return (
     <div>
       <Grid grid={grid} />
-      <TalkyBlocky talkyBlocky={talkyBlocky} talkyIsTalking={talkyIsTalking} talkyBackground={talkyBackground}/>
+      <TalkyBlocky
+        talkyBlocky={talkyBlocky}
+        talkyIsTalking={talkyIsTalking}
+        talkyBackground={talkyBackground}
+      />
     </div>
-  )
+  );
 }
