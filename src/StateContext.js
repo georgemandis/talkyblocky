@@ -41,8 +41,8 @@ function StateContextProvider(props) {
 
   const nonCommands = {                        
     // "walkie-talkie": "That's me!",
-    "hi":   ["Hi! How's it going?", "Yo!", "Hey there."],
-    "high": ["Hi! How's it going?", "Yo!", "Hey there."],    
+    "hello":   ["Hi! How's it going?", "Yo!", "Hey there."],
+    // "high": ["Hi! How's it going?", "Yo!", "Hey there."],    
     "george": "Hi George. It's so nice to hear your voice. I hope you are doing well... I love you.",
     "yo": "Oh. Hi. Um. Is George still there?", // Dree
     // jokes
@@ -118,7 +118,7 @@ function StateContextProvider(props) {
       try {                              
         const sound = new Audio();
         sound.src = "/assets/sounds/listenSound.wav";  
-        sound.volume = .05;
+        sound.volume = .015;
         sound.play();
     
         recognition.start();
@@ -135,7 +135,7 @@ function StateContextProvider(props) {
     if (e.keyCode === 32) {      
       const sound = new Audio();
       sound.src = "/assets/sounds/executeSound.wav";  
-      sound.volume = .05;
+      sound.volume = .015;
       sound.play();
 
       recognition.removeEventListener("end", continuouslyTranscribe);
