@@ -1,3 +1,22 @@
+export const directions = {
+  up: "up",
+  down: "down",
+  left: "left",
+  right: "right",
+  rights: "right",
+  write: "right"
+};
+
+export const nonCommands = {
+  hello: ["Hi! How's it going?", "Yo!", "Hey there."],
+  thanks: [
+    "your welcome, easy fix",
+    "no sweat, easy fix",
+    "piece of cake",
+    "It's not like I have a choice"
+  ]
+};
+
 export const colors = {
   cornsilk: "255,248,220",
   almond: "255,235,205",
@@ -9,7 +28,7 @@ export const colors = {
   tan: "210,180,140",
   rosybrown: "188,143,143",
   sandybrown: "244,164,96",
-  goldenrod: "218,165,32",    
+  goldenrod: "218,165,32",
   chocolate: "210,105,30",
   saddlebrown: "139,69,19",
   sienna: "160,82,45",
@@ -65,8 +84,8 @@ export const colors = {
   //lightcyan: "224,255,255",
   cyan: "0,255,255",
   aqua: "0,255,255",
-  aquamarine: "127,255,212",    
-  turquoise: "64,224,208",    
+  aquamarine: "127,255,212",
+  turquoise: "64,224,208",
   //darkturquoise: "0,206,209",
   //lightseagree: "32,178,170",
   cadetblue: "95,158,160",
@@ -135,4 +154,4 @@ export const colors = {
   khaki: "240,230,140",
   //darkkhaki: "189,183,107",
   yellow: "255,255,0"
-  };
+};
