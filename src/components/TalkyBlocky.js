@@ -22,8 +22,8 @@ const TalkyBlocky = styled.div`
       animation-duration: 300ms;
       animation-iteration-count: infinite;
       background-image: ${props.talkyBackground
-        ? `url(/assets/images/walkie-talkie/${props.talkyBackground})`
-        : "url(/assets/images/walkie-talkie/wtDefault.png)"};
+        ? `url(./assets/images/walkie-talkie/${props.talkyBackground})`
+        : "url(./assets/images/walkie-talkie/wtDefault.png)"};
     `}
 `;
 

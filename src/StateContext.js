@@ -162,7 +162,7 @@ function StateContextProvider(props) {
     if (e.keyCode === 32) {
       try {
         const sound = new Audio();
-        sound.src = "/assets/sounds/listenSound.wav";
+        sound.src = "./assets/sounds/listenSound.wav";
         sound.volume = 0.015;
         sound.play();
 
@@ -177,7 +177,7 @@ function StateContextProvider(props) {
   function spaceBarUpHandler(e) {
     if (e.keyCode === 32) {
       const sound = new Audio();
-      sound.src = "/assets/sounds/executeSound.wav";
+      sound.src = "./assets/sounds/executeSound.wav";
       sound.volume = 0.015;
       sound.play();
 
